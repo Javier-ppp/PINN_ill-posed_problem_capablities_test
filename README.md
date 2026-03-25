@@ -1,0 +1,1 @@
+# PINN_ill-posed_problem_capablities_test
