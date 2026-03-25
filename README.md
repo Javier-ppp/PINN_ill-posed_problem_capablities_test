@@ -20,18 +20,31 @@ This repository explores the application of **Physics-Informed Neural Networks (
 
 ## 📖 Theoretical Background
 
-The project uses the general RC circuit differential equation:
+The project investigates the identification of physical parameters in systems governed by conservation laws, modeled via the electrical RC circuit analogy. 
 
-$$\frac{dV_C(t)}{dt} + \frac{1}{RC}V_C(t) = \frac{V_{in}(t)}{RC}$$
+### 1. Mathematical Models
+The system is evaluated across two primary configurations:
 
-In the thermal analogy:
-- $V_C(t)$ represents the temperature (node voltage).
-- $V_{in}(t)$ represents the external temperature source (input voltage).
-- $R$ and $C$ represent thermal resistance and capacitance respectively.
+- **Single-Stage RC Filter (1st Order)**:
+  $$v_{in}(t) - v_{out}(t) - RC \frac{dv_{out}(t)}{dt} = 0$$
+  The system reaches a pole at $p = -\frac{1}{RC}$.
 
-The PINN minimizes a composite loss function:
-$$ \mathcal{L} = \mathcal{L}_{physics} + \lambda \mathcal{L}_{data} $$
-where the physics loss ensures the network satisfies the ODE residual, and the data loss matches observational points.
+- **Two-Stage RC Filter (2nd Order)**:
+  A system of two first-order ODEs is combined into a single second-order residual form:
+  $$R_1 C_1 R_2 C_2 \frac{d^2 v_{out}(t)}{dt^2} + (R_2 C_2 + R_1(C_1 + C_2)) \frac{dv_{out}(t)}{dt} + v_{out}(t) - v_{in}(t) = 0$$
+  This formulation allows the PINN to fit a single output signal ($v_{out}$) to discover multiple underlying parameters ($R_i, C_i$).
+
+### 2. The Loss Function & Constraints
+To ensure physical consistency and parameter positivity (e.g., $R, C > 0$), the PINN employs a constrained loss function:
+$$ \mathcal{L} = (1 - \lambda) \mathcal{L}_{data} + \lambda \mathcal{L}_{physics} + \sum Swish(\mu_i) + \sum Swish(\rho_i) $$
+where:
+- $\mathcal{L}_{physics}$ is the mean squared residual of the ODE.
+- $Swish(x) = x \cdot Sigmoid(x)$ acts as a soft penalty to prevent parameters from becoming negative during optimization.
+- $\mu_i$ and $\rho_i$ represent the network's approximations of $C_i$ and $R_i$.
+
+### 3. The Curse of Dimensionality & Uniqueness
+A core finding of this research is the **identifiability crisis** in ill-posed inverse problems. While the PINN can accurately reconstruct the system's dynamics (poles $p_i$), the individual components ($R_i, C_i$) are not unique for a given set of poles in multi-stage systems. As the number of parameters increases, the optimization landscape becomes increasingly complex, rendering the discovery of exact physical constants fundamentally unstable without additional boundary information.
+
 
 ## 📂 Project Structure
 
