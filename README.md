@@ -96,7 +96,8 @@ A core finding of this research is the **identifiability crisis** in ill-posed i
    - Initial PINN architecture setup.
    - Solving a standard analytical example.
    - Simulating single and multi-node RC circuits.
-   - Executing the inverse solver to "discover" physical constants.
+   - Training the PINN to run prediction.
+   - Training the PINN to "discover" physical constants.
 
 ## 📊 Results Summary
 
