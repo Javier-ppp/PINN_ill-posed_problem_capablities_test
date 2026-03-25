@@ -26,19 +26,19 @@ The project investigates the identification of physical parameters in systems go
 The system is evaluated across two primary configurations:
 
 - **Single-Stage RC Filter (1st Order)**:
-  $$
+  \[
   v_{in}(t) - v_{out}(t) - RC \frac{dv_{out}(t)}{dt} = 0
-  $$
+  \]
   The system reaches a pole at:
-  $$
+  \[
   p = -\frac{1}{RC}
-  $$
+  \]
 
 - **Two-Stage RC Filter (2nd Order)**:
   The two-stage configuration can be represented by a first-order system (identifying partial information):
-  $$
+  \[
   v_{in}(t) - v_1(t) - R_1 C_1 \frac{dv_1(t)}{dt} - R_1 C_2 \frac{dv_{out}(t)}{dt} = 0
-  $$
+  ]\
   Alternatively, it can be combined into a single second-order residual form:
   $$
   R_1 C_1 R_2 C_2 \frac{d^2 v_{out}(t)}{dt^2} + (R_2 C_2 + R_1(C_1 + C_2)) \frac{dv_{out}(t)}{dt} + v_{out}(t) - v_{in}(t) = 0
