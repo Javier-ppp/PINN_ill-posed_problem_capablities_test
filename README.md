@@ -26,17 +26,30 @@ The project investigates the identification of physical parameters in systems go
 The system is evaluated across two primary configurations:
 
 - **Single-Stage RC Filter (1st Order)**:
-  $$v_{in}(t) - v_{out}(t) - RC \frac{dv_{out}(t)}{dt} = 0$$
-  The system reaches a pole at $p = -\frac{1}{RC}$.
+  $$
+  v_{in}(t) - v_{out}(t) - RC \frac{dv_{out}(t)}{dt} = 0
+  $$
+  The system reaches a pole at:
+  $$
+  p = -\frac{1}{RC}
+  $$
 
 - **Two-Stage RC Filter (2nd Order)**:
-  A system of two first-order ODEs is combined into a single second-order residual form:
-  $$R_1 C_1 R_2 C_2 \frac{d^2 v_{out}(t)}{dt^2} + (R_2 C_2 + R_1(C_1 + C_2)) \frac{dv_{out}(t)}{dt} + v_{out}(t) - v_{in}(t) = 0$$
+  The two-stage configuration can be represented by a first-order system (identifying partial information):
+  $$
+  v_{in}(t) - v_1(t) - R_1 C_1 \frac{dv_1(t)}{dt} - R_1 C_2 \frac{dv_{out}(t)}{dt} = 0
+  $$
+  Alternatively, it can be combined into a single second-order residual form:
+  $$
+  R_1 C_1 R_2 C_2 \frac{d^2 v_{out}(t)}{dt^2} + (R_2 C_2 + R_1(C_1 + C_2)) \frac{dv_{out}(t)}{dt} + v_{out}(t) - v_{in}(t) = 0
+  $$
   This formulation allows the PINN to fit a single output signal ($v_{out}$) to discover multiple underlying parameters ($R_i, C_i$).
 
 ### 2. The Loss Function & Constraints
 To ensure physical consistency and parameter positivity (e.g., $R, C > 0$), the PINN employs a constrained loss function:
-$$ \mathcal{L} = (1 - \lambda) \mathcal{L}_{data} + \lambda \mathcal{L}_{physics} + \sum Swish(\mu_i) + \sum Swish(\rho_i) $$
+$$
+\mathcal{L} = (1 - \lambda) \mathcal{L}_{data} + \lambda \mathcal{L}_{physics} + \sum Swish(\mu_i) + \sum Swish(\rho_i)
+$$
 where:
 - $\mathcal{L}_{physics}$ is the mean squared residual of the ODE.
 - $Swish(x) = x \cdot Sigmoid(x)$ acts as a soft penalty to prevent parameters from becoming negative during optimization.
@@ -45,10 +58,10 @@ where:
 ### 3. The Curse of Dimensionality & Uniqueness
 A core finding of this research is the **identifiability crisis** in ill-posed inverse problems. While the PINN can accurately reconstruct the system's dynamics (poles $p_i$), the individual components ($R_i, C_i$) are not unique for a given set of poles in multi-stage systems. As the number of parameters increases, the optimization landscape becomes increasingly complex, rendering the discovery of exact physical constants fundamentally unstable without additional boundary information.
 
-
 ## 📂 Project Structure
 
 - `PINN wall demo-inverse.ipynb`: Main research and implementation notebook.
+- `2511.08561v1.pdf`: Research paper: "The curse of dimensionality: what lies beyond the capabilities of physics-informed neural networks".
 - `nonoise_single.pt`: Saved model weights for a single-layer wall simulation.
 - `nonoise_two_nodes.pt`: Saved model weights for a two-node (complex) simulation.
 - `.env/`: Local environment configuration (standard for this repo).
