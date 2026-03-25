@@ -31,13 +31,13 @@ $$
 v_{in}(t) - v_{out}(t) - RC \frac{dv_{out}(t)}{dt} = 0
 $$
 
-The system reaches a pole at:
+The system should reach the pole:
 
 $$
 p = -\frac{1}{RC}
 $$
 
-- **Two-Stage RC Filter (2nd Order)**:
+- **Two-Stage RC Filter (1st and 2nd Order)**:
 The two-stage configuration can be represented by a first-order system (identifying partial information):
 
 $$
@@ -52,7 +52,14 @@ $$
 
 This formulation allows the PINN to fit a single output signal ($v_{out}$) to discover multiple underlying parameters ($R_i, C_i$).
 
+These formulations should reach the poles:
+
+$$
+p_{1,2} = - \frac{R_2 C_2 + R_1(C_1 + C_2)}{2 R_1 C_1 R_2 C_2} \pm \frac{\sqrt{(R_2 C_2 + R_1(C_1 + C_2))^2 - 4 R_1 C_1 R_2 C_2}}{2 R_1 C_1 R_2 C_2}
+$$
+
 ### 2. The Loss Function & Constraints
+
 To ensure physical consistency and parameter positivity (e.g., $R, C > 0$), the PINN employs a constrained loss function:
 
 $$
@@ -60,10 +67,11 @@ $$
 $$
 
 where:
-
+- $\mathcal{L}_{data}$ is the mean squared error between the predicted and observed data.
 - $\mathcal{L}_{physics}$ is the mean squared residual of the ODE.
 - $Swish(x) = x \cdot Sigmoid(x)$ acts as a soft penalty to prevent parameters from becoming negative during optimization.
 - $\mu_i$ and $\rho_i$ represent the network's approximations of $C_i$ and $R_i$.
+- $\lambda$ is the relative weight of the physics loss (importance trade-off between data and physics). 
 
 ### 3. The Curse of Dimensionality & Uniqueness
 A core finding of this research is the **identifiability crisis** in ill-posed inverse problems. While the PINN can accurately reconstruct the system's dynamics (poles $p_i$), the individual components ($R_i, C_i$) are not unique for a given set of poles in multi-stage systems. As the number of parameters increases, the optimization landscape becomes increasingly complex, rendering the discovery of exact physical constants fundamentally unstable without additional boundary information.
